@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0284c7" />
+  <title>YETI ESCAPE: Mountain Alpine Rush</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="game-wrapper">
+    <!-- Game Canvas -->
+    <canvas id="gameCanvas" width="480" height="854"></canvas>
+
+    <!-- Top HUD -->
+    <header id="arcade-hud" class="hud-layer">
+      <div class="hud-chip">
+        <span class="hud-label">DISTANCE</span>
+        <span id="dist-display" class="hud-val">0<span class="hud-unit">m</span></span>
+      </div>
+      <div class="hud-chip">
+        <span class="hud-label">SCORE</span>
+        <span id="score-display" class="hud-val">00000</span>
+      </div>
+      <div class="hud-chip">
+        <span class="hud-label">COINS</span>
+        <span id="coins-display" class="hud-val">🪙 0</span>
+      </div>
+      <button id="mute-btn" class="hud-btn" aria-label="Toggle Mute">🔊</button>
+      <button id="pause-btn" class="hud-btn" aria-label="Pause Game">⏸️</button>
+    </header>
+
+    <!-- Yeti Proximity Meter / Danger Bar -->
+    <div id="yeti-tracker" class="hud-layer">
+      <div class="tracker-bar">
+        <div class="tracker-icon yeti-avatar">👹</div>
+        <div class="tracker-track">
+          <div id="yeti-progress" class="tracker-fill"></div>
+        </div>
+        <div class="tracker-icon player-avatar">🏂</div>
+      </div>
+      <div id="yeti-warning-text" class="danger-tag hidden">⚠️ YETI IS CLOSING IN! SWIPE UP TO BOOST!</div>
+    </div>
+
+    <!-- Trick Combo Display -->
+    <div id="combo-popup" class="combo-banner hidden">
+      <div id="combo-name" class="trick-name">BACKFLIP 360!</div>
+      <div id="combo-points" class="trick-pts">+500 PTS</div>
+    </div>
+
+    <!-- Start / Title Overlay Screen -->
+    <div id="start-screen" class="overlay-screen active">
+      <div class="menu-box">
+        <div class="badge-tag">ALPINE SKI & SNOWBOARD SURVIVAL</div>
+        <h1 class="game-title">YETI<br><span class="highlight-title">ESCAPE</span></h1>
+        <p class="subtitle">OUTRUN THE MONSTER OF THE PEAK</p>
+
+        <div class="controls-guide">
+          <div class="guide-item">
+            <span class="guide-icon">👆</span>
+            <span><strong>Drag Left / Right</strong> to carve & steer through pines</span>
+          </div>
+          <div class="guide-item">
+            <span class="guide-icon">🚀</span>
+            <span><strong>Swipe Up / Tap</strong> off ramps to do Backflip tricks</span>
+          </div>
+          <div class="guide-item">
+            <span class="guide-icon">🪵</span>
+            <span><strong>Grind logs & rails</strong> for massive speed boosts</span>
+          </div>
+          <div class="guide-item">
+            <span class="guide-icon">👹</span>
+            <span>Crash or slow down and the <strong>Yeti grabs you!</strong></span>
+          </div>
+        </div>
+
+        <div class="high-score-preview">
+          RECORD DISTANCE: <span id="title-high-score">0</span>m
+        </div>
+
+        <button id="start-btn" class="arcade-btn pulse-glow">DROP IN & RIDE 🏂</button>
+      </div>
+    </div>
+
+    <!-- Pause Overlay Screen -->
+    <div id="pause-screen" class="overlay-screen hidden">
+      <div class="menu-box">
+        <h2 class="game-title paused-title">PAUSED</h2>
+        <p class="subtitle">WARM UP BY THE CABIN FIRE</p>
+        <button id="resume-btn" class="arcade-btn">RESUME ▶</button>
+        <button id="restart-pause-btn" class="arcade-btn secondary-btn">RETRY ↺</button>
+      </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over-screen" class="overlay-screen hidden">
+      <div class="menu-box">
+        <div class="danger-badge">CAUGHT BY THE YETI! 👹</div>
+        <h2 class="game-title gameover-title">WIPEOUT!</h2>
+
+        <div class="stats-card">
+          <div class="stat-row">
+            <span>DISTANCE RUN</span>
+            <span id="final-dist" class="stat-highlight">0m</span>
+          </div>
+          <div class="stat-row">
+            <span>TOTAL SCORE</span>
+            <span id="final-score">0</span>
+          </div>
+          <div class="stat-row">
+            <span>COINS MINED</span>
+            <span id="final-coins">0</span>
+          </div>
+          <div class="stat-row">
+            <span>BEST RUN</span>
+            <span id="final-record" class="record-highlight">0m</span>
+          </div>
+        </div>
+
+        <div id="new-record-alert" class="new-record-tag hidden">🔥 NEW ALPINE RECORD! 🔥</div>
+
+        <button id="retry-btn" class="arcade-btn pulse-glow">SHRED AGAIN 🏂</button>
+      </div>
+    </div>
+
+    <!-- Minimal Gesture Hint -->
+    <div class="touch-hint-layer">
+      <div class="hint-text">👈 Drag to Carve • Swipe Up to Trick / Grind 👉</div>
+    </div>
+  </div>
+
+  <!-- Audio Synthesizer & Game Scripts -->
+  <script src="audio.js"></script>
+  <script src="particles.js"></script>
+  <script src="terrain.js"></script>
+  <script src="player.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
